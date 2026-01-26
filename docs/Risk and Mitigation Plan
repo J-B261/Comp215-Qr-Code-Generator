@@ -1,0 +1,7 @@
+| Risk                                                             | Likelihood | Impact | Mitigation Strategy                                                                  |
+| ---------------------------------------------------------------- | ---------- | ------ | ------------------------------------------------------------------------------------ |
+| QR codes generated incorrectly due to invalid or malformed input | Medium     | High   | Check user input carefully and test QR codes using different types of text and URLs. |
+| Backend setup issues with Flask or required libraries            | Low        | Medium | Set up Flask early and write down the setup steps so they are easy to repeat.        |
+| Difficulty demonstrating progress during sprint reviews          | Medium     | High   | Finish small features early so there is always something working to show.            |
+| Unexpected errors when exporting QR codes as image files         | Medium     | Medium | Test exporting QR codes in different formats and sizes early in the project.         |
+| Overengineering the project beyond its intended scope            | Low        | Medium | Stick to the planned features and avoid adding extras until the core system works.   |
