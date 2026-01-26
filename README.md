@@ -1,2 +1,6 @@
 # Comp215-Qr-Code-Generator
-Area i'm putting all the stuff for my Qr Code Generator for my class
+
+This project is a QR Code Generator application that will allow users to convert text or URLs into QR codes that can then be viewed and exported as image files. The system will focus on simplicity, input validating, ease of use, and a nice overall design.
+
+- Programming Language: Python
+- Backend Framework: Flask
