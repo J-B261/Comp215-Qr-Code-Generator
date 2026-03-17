@@ -1,23 +1,44 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>QR Code Generator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h1>QR Code Generator</h1>
+  <div class="container">
+    <h1>QR Code Generator</h1>
+    <p class="subtitle">Enter text or a URL to generate a QR code.</p>
 
-  <form method="POST" action="/generate">
-    <input type="text" name="data" placeholder="Enter text or URL">
-    <button type="submit">Generate</button>
-  </form>
+    <form method="POST" action="/generate" class="qr-form">
+      <input
+        type="text"
+        name="data"
+        placeholder="Enter text or URL"
+        value="{{ submitted_text if submitted_text else '' }}"
+      >
+      <button type="submit">Generate</button>
+    </form>
 
-  {% if error %}
-    <p style="color:red;">{{ error }}</p>
-  {% endif %}
+    {% if error %}
+      <div class="message error">{{ error }}</div>
+    {% endif %}
 
-  {% if message %}
-    <p style="color:green;">{{ message }}</p>
-  {% endif %}
+    {% if message %}
+      <div class="message success">{{ message }}</div>
+    {% endif %}
+
+    {% if qr_data %}
+      <div class="result-section">
+        <h2>Generated QR Code</h2>
+        <img
+          src="data:image/png;base64,{{ qr_data }}"
+          alt="Generated QR Code"
+          class="qr-image"
+        >
+      </div>
+    {% endif %}
+  </div>
 </body>
 </html>
