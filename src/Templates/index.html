@@ -1,44 +1,244 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- sets up basic page settings and links the CSS styles -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>QR Code Generator</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body>
+  <!-- main container that holds everything on the page -->
   <div class="container">
     <h1>QR Code Generator</h1>
     <p class="subtitle">Enter text or a URL to generate a QR code.</p>
 
-    <form method="POST" action="/generate" class="qr-form">
+    <!--  where the user enters text or a URL -->
+    <form method="POST" action="/generate" class="qr-form" id="qrForm">
       <input
         type="text"
         name="data"
+        id="dataInput"
         placeholder="Enter text or URL"
         value="{{ submitted_text if submitted_text else '' }}"
+        maxlength="1000"
       >
-      <button type="submit">Generate</button>
+      <button type="submit" id="generateBtn">Generate</button>
     </form>
 
-    {% if error %}
-      <div class="message error">{{ error }}</div>
-    {% endif %}
+    <!-- shows error messages if something goes wrong -->
+    <div id="errorMessage" class="message error {% if not error %}hidden{% endif %}">
+      {{ error if error else '' }}
+    </div>
 
-    {% if message %}
-      <div class="message success">{{ message }}</div>
-    {% endif %}
+    <!-- shows success messages when the QR is created -->
+    <div id="successMessage" class="message success {% if not message %}hidden{% endif %}">
+      {{ message if message else '' }}
+    </div>
 
-    {% if qr_data %}
-      <div class="result-section">
-        <h2>Generated QR Code</h2>
-        <img
-          src="data:image/png;base64,{{ qr_data }}"
-          alt="Generated QR Code"
-          class="qr-image"
-        >
+    <!-- displays the generated QR code and related info -->
+    <div id="resultSection" class="result-section {% if not qr_data %}hidden{% endif %}">
+      <h2>Generated QR Code</h2>
+
+      <!--  displays the QR code image -->
+      <img
+        id="qrImage"
+        src="{% if qr_data %}data:image/png;base64,{{ qr_data }}{% endif %}"
+        alt="Generated QR Code"
+        class="qr-image"
+      >
+
+      <!--  shows the text or URL used to generate the QR -->
+      <p class="submitted-text">
+        <strong>Input:</strong>
+        <span id="submittedText">{{ submitted_text if submitted_text else '' }}</span>
+      </p>
+
+      <!--  save/download options -->
+      <div class="actions">
+        <h2>Save</h2>
+        <div class="action-group">
+          <a
+            id="downloadLink"
+            class="action-button"
+            href="{% if submitted_text %}{{ url_for('download_qr', data=submitted_text) }}{% else %}#{% endif %}"
+          >
+            Download PNG
+          </a>
+
+          <button type="button" class="action-button secondary-button" id="shareDeviceBtn">
+            Share
+          </button>
+        </div>
       </div>
-    {% endif %}
+
+      <!-- sharing options like email and social media -->
+      <div class="share-section">
+        <h2>Share Options</h2>
+        <div class="share-links">
+          <a id="emailShare" class="share-icon" href="#" target="_blank" title="Email">
+            <i class="fa-solid fa-envelope"></i>
+          </a>
+
+          <a id="twitterShare" class="share-icon" href="#" target="_blank" title="Share to X">
+            <i class="fa-brands fa-x-twitter"></i>
+          </a>
+
+          <a id="instagramBtn" class="share-icon" href="#" title="Instagram">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    //  selects all the main elements so they can be updated with JavaScript
+    const qrForm = document.getElementById("qrForm");
+    const dataInput = document.getElementById("dataInput");
+    const generateBtn = document.getElementById("generateBtn");
+
+    const errorMessage = document.getElementById("errorMessage");
+    const successMessage = document.getElementById("successMessage");
+    const resultSection = document.getElementById("resultSection");
+    const qrImage = document.getElementById("qrImage");
+    const submittedText = document.getElementById("submittedText");
+    const downloadLink = document.getElementById("downloadLink");
+
+    const emailShare = document.getElementById("emailShare");
+    const twitterShare = document.getElementById("twitterShare");
+    const shareDeviceBtn = document.getElementById("shareDeviceBtn");
+    const instagramBtn = document.getElementById("instagramBtn");
+
+
+    //  shows an error message on the page
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.remove("hidden");
+      successMessage.classList.add("hidden");
+    }
+
+    //  shows a success message on the page
+    function showSuccess(message) {
+      successMessage.textContent = message;
+      successMessage.classList.remove("hidden");
+      errorMessage.classList.add("hidden");
+    }
+
+    //  clears both error and success messages
+    function clearMessages() {
+      errorMessage.classList.add("hidden");
+      successMessage.classList.add("hidden");
+    }
+
+    //  updates the share links based on the user's input
+    function updateShareLinks(text) {
+      const encodedText = encodeURIComponent(text);
+
+      emailShare.href =
+        `mailto:?subject=${encodeURIComponent("QR Code Content")}body=${encodeURIComponent("Hey, check this out: " + text)}`;
+
+      twitterShare.href =
+        `https://twitter.com/intent/tweet?text=${encodedText}`;
+
+      downloadLink.href = `/download?data=${encodedText}`;
+    }
+
+    //  updates the QR image and shows the result section
+    function updateResult(qrData, text, message) {
+      qrImage.src = `data:image/png;base64,${qrData}`;
+      submittedText.textContent = text;
+      resultSection.classList.remove("hidden");
+
+      updateShareLinks(text);
+      showSuccess(message);
+    }
+
+    // handles form submission using AJAX instead of reloading the page
+    qrForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      clearMessages();
+
+      const formData = new FormData(qrForm);
+      generateBtn.disabled = true;
+      generateBtn.textContent = "Generating...";
+
+      try {
+        const response = await fetch("/generate", {
+          method: "POST",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          showError(result.error || "Something went wrong. Please try again.");
+          resultSection.classList.add("hidden");
+        } else {
+          updateResult(result.qr_data, result.submitted_text, result.message);
+        }
+      } catch (error) {
+        showError("Unable to connect to the server right now. Please try again.");
+        resultSection.classList.add("hidden");
+      } finally {
+        generateBtn.disabled = false;
+        generateBtn.textContent = "Generate";
+      }
+    });
+
+    // This handles sharing using the device's built-in share feature
+    shareDeviceBtn.addEventListener("click", async function () {
+      const text = submittedText.textContent.trim();
+
+      if (!text) {
+        showError("Please generate a QR code before sharing.");
+        return;
+      }
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "QR Code Content",
+            text: `Hey, check this out: ${text}`
+          });
+        } catch (error) {
+          // user cancelled
+        }
+      } else {
+        showError("Direct sharing is not supported on this device. Use Email or X instead.");
+      }
+    });
+
+    // handles Instagram sharing by copying text and opening Instagram
+    instagramBtn.addEventListener("click", async function (e) {
+      e.preventDefault();
+
+      const text = submittedText.textContent.trim();
+
+      if (!text) {
+        showError("Please generate a QR code before using Instagram sharing.");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showSuccess("Text copied. Instagram will open in a new tab. Upload the downloaded QR image there manually.");
+        window.open("https://www.instagram.com/", "_blank");
+      } catch (error) {
+        showError("Could not copy the text automatically. Please copy it manually and then open Instagram.");
+      }
+    });
+
+    //  runs on page load to make sure share links are correct if data already exists
+    const existingText = submittedText.textContent.trim();
+    if (existingText) {
+      updateShareLinks(existingText);
+    }
+  </script>
 </body>
 </html>
