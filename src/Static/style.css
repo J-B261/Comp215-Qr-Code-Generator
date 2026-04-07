@@ -1,3 +1,4 @@
+/*  styles the main page background and centers everything on the screen */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -6,28 +7,42 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
+/* his styles the main content box in the center */
 .container {
   background: white;
   padding: 35px;
   border-radius: 12px;
   width: 90%;
-  max-width: 650px;
+  max-width: 700px;
   text-align: center;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
 }
 
+/*  styles the main title */
 h1 {
   margin-top: 0;
   margin-bottom: 10px;
+  font-size: 2rem;
 }
 
+/*  styles section headings */
+h2 {
+  margin-bottom: 10px;
+}
+
+/*  styles the subtitle text under the title */
 .subtitle {
   color: #555;
   margin-bottom: 25px;
+  line-height: 1.5;
 }
 
+/*  controls the layout of the input and button */
 .qr-form {
   display: flex;
   justify-content: center;
@@ -35,29 +50,41 @@ h1 {
   flex-wrap: wrap;
 }
 
+/*  styles the text input box */
 input[type="text"] {
   width: 350px;
   max-width: 100%;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
-button {
-  padding: 10px 18px;
+/*  styles buttons and links to look same
+button, */
+.action-button,
+.share-link {
+  padding: 12px 18px;
   border: none;
   border-radius: 6px;
   background-color: #2563eb;
   color: white;
   font-size: 16px;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-button:hover {
+/*  changes button color when hovered */
+button:hover,
+.action-button:hover,
+.share-link:hover {
   background-color: #1d4ed8;
 }
 
+/*  styles message boxes (error/success) */
 .message {
   margin-top: 20px;
   padding: 12px;
@@ -65,25 +92,191 @@ button:hover {
   font-weight: bold;
 }
 
+/*  styles error messages */
 .error {
   background-color: #fde2e2;
   color: #b00020;
 }
 
+/*  styles success messages */
 .success {
   background-color: #e3f7e8;
   color: #1b5e20;
 }
 
+/*  styles the section where the QR result is shown */
 .result-section {
   margin-top: 30px;
 }
 
+/*  styles the displayed QR image */
 .qr-image {
   margin-top: 15px;
   max-width: 250px;
+  width: 100%;
   height: auto;
   border: 1px solid #ddd;
   padding: 10px;
   background: white;
+  box-sizing: border-box;
+}
+
+/* styles the text that was used to generate the QR */
+.submitted-text {
+  margin-top: 15px;
+  color: #444;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+/* spacing for action and share sections */
+.actions,
+.share-section {
+  margin-top: 20px;
+}
+
+/*  controls the layout of buttons in groups */
+.action-group,
+.share-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+/*  styles the small note under share options */
+.share-note {
+  margin-top: 10px;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/*  styles secondary buttons different */
+.secondary-button {
+  background-color: #4b5563;
+}
+
+/*  changes secondary button color when hovering */
+.secondary-button:hover {
+  background-color: #374151;
+}
+
+/* hides elements if needed */
+.hidden {
+  display: none;
+}
+
+/*  styles the circular share icons */
+.share-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #2563eb;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  padding: 0;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/*  adds a hover effect to the share icons */
+.share-icon:hover {
+  background-color: #1d4ed8;
+  transform: scale(1.05);
+}
+
+/*  styles the icon inside the share button */
+.share-icon i {
+  font-size: 22px;
+  line-height: 1;
+}
+
+/*  adjusts layout for tablets and smaller screens */
+@media (max-width: 768px) {
+  .container {
+    padding: 25px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  .qr-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  input[type="text"],
+  button {
+    width: 100%;
+  }
+
+  .action-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .share-links {
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .qr-image {
+    max-width: 220px;
+  }
+}
+
+/*  adjusts layout for small screens like a phone */
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+  }
+
+  .container {
+    padding: 20px;
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  input[type="text"],
+  button,
+  .action-button,
+  .share-link {
+    font-size: 15px;
+    padding: 11px 14px;
+  }
+
+  .qr-image {
+    max-width: 180px;
+  }
+
+  .share-icon {
+    width: 46px;
+    height: 46px;
+  }
+
+  .share-icon i {
+    font-size: 20px;
+  }
 }
