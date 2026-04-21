@@ -1,0 +1,21 @@
+entered text and it worked great same with url
+
+empty input was entered and error message appeared
+
+attempted to test the 1000 character limit error but box caps out before limit is reached
+
+changed the input and the qr code updated correctly
+
+download button works
+
+share button works
+
+share menu opens properly displaying options for user to choose
+
+site adjusts to window size
+
+server stopped with open window and error connection message showed up
+
+error message showed on invalid actions
+
+updated code and broke the share/download buttons turned out to be note not being closed off
